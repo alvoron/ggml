@@ -992,6 +992,12 @@ extern "C" {
             struct ggml_tensor  * a,
             struct ggml_tensor  * b);
 
+    GGML_API struct ggml_tensor * ggml_mul_mat_ext_dst(
+            struct ggml_context * ctx,
+            struct ggml_tensor  * a,
+            struct ggml_tensor  * b,
+            void* dst);
+
     // A: m columns, n rows,
     // B: p columns, n rows,
     // result is m columns, p rows
