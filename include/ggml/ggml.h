@@ -642,6 +642,13 @@ extern "C" {
             int    n_dims,
             const int64_t *ne);
 
+    GGML_API struct ggml_tensor * ggml_new_tensor_ext_data(
+            struct ggml_context * ctx,
+            enum   ggml_type type,
+            int    n_dims,
+            const int64_t *ne,
+            void *data);
+
     GGML_API struct ggml_tensor * ggml_new_tensor_1d(
             struct ggml_context * ctx,
             enum   ggml_type type,
@@ -652,6 +659,13 @@ extern "C" {
             enum   ggml_type type,
             int64_t ne0,
             int64_t ne1);
+
+    GGML_API struct ggml_tensor * ggml_new_tensor_2d_ext_data(
+            struct ggml_context * ctx,
+            enum   ggml_type type,
+            int64_t ne0,
+            int64_t ne1,
+            void* data);
 
     GGML_API struct ggml_tensor * ggml_new_tensor_3d(
             struct ggml_context * ctx,
