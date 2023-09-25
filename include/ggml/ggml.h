@@ -292,7 +292,6 @@ extern "C" {
     GGML_API void ggml_fp32_to_fp16_row(const float * x, ggml_fp16_t * y, int n);
 
     struct ggml_object;
-    struct ggml_context;
 
     enum ggml_type {
         GGML_TYPE_F32  = 0,
@@ -548,6 +547,22 @@ extern "C" {
         void * data;
     };
 
+struct ggml_context {
+    size_t mem_size;
+    void * mem_buffer;
+    bool   mem_buffer_owned;
+    bool   no_alloc;
+    bool   no_alloc_save; // this is used to save the no_alloc state when using scratch buffers
+
+    int    n_objects;
+
+    struct ggml_object * objects_begin;
+    struct ggml_object * objects_end;
+
+    struct ggml_scratch scratch;
+    struct ggml_scratch scratch_save;
+};
+
     struct ggml_init_params {
         // memory pool
         size_t mem_size;   // bytes
@@ -578,6 +593,14 @@ extern "C" {
     };
 
     // misc
+
+GGML_API void ggml_compute_forward_mul_mat(
+        const struct ggml_compute_params * params,
+        const struct ggml_tensor * src0,
+        const struct ggml_tensor * src1,
+              struct ggml_tensor * dst);
+
+GGML_API struct ggml_object * ggml_new_object(struct ggml_context * ctx, enum ggml_object_type type, size_t size);
 
     GGML_API void    ggml_time_init(void); // call this once at the beginning of the program
     GGML_API int64_t ggml_time_ms(void);
