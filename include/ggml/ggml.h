@@ -292,7 +292,6 @@ extern "C" {
     GGML_API void ggml_fp32_to_fp16_row(const float * x, ggml_fp16_t * y, int n);
 
     struct ggml_object;
-    struct ggml_context;
 
     enum ggml_type {
         GGML_TYPE_F32  = 0,
@@ -548,6 +547,22 @@ extern "C" {
         void * data;
     };
 
+struct ggml_context {
+    size_t mem_size;
+    void * mem_buffer;
+    bool   mem_buffer_owned;
+    bool   no_alloc;
+    bool   no_alloc_save; // this is used to save the no_alloc state when using scratch buffers
+
+    int    n_objects;
+
+    struct ggml_object * objects_begin;
+    struct ggml_object * objects_end;
+
+    struct ggml_scratch scratch;
+    struct ggml_scratch scratch_save;
+};
+
     struct ggml_init_params {
         // memory pool
         size_t mem_size;   // bytes
@@ -578,6 +593,14 @@ extern "C" {
     };
 
     // misc
+
+GGML_API void ggml_compute_forward_mul_mat(
+        const struct ggml_compute_params * params,
+        const struct ggml_tensor * src0,
+        const struct ggml_tensor * src1,
+              struct ggml_tensor * dst);
+
+GGML_API struct ggml_object * ggml_new_object(struct ggml_context * ctx, enum ggml_object_type type, size_t size);
 
     GGML_API void    ggml_time_init(void); // call this once at the beginning of the program
     GGML_API int64_t ggml_time_ms(void);
@@ -642,6 +665,13 @@ extern "C" {
             int    n_dims,
             const int64_t *ne);
 
+    GGML_API struct ggml_tensor * ggml_new_tensor_ext_data(
+            struct ggml_context * ctx,
+            enum   ggml_type type,
+            int    n_dims,
+            const int64_t *ne,
+            void *data);
+
     GGML_API struct ggml_tensor * ggml_new_tensor_1d(
             struct ggml_context * ctx,
             enum   ggml_type type,
@@ -652,6 +682,13 @@ extern "C" {
             enum   ggml_type type,
             int64_t ne0,
             int64_t ne1);
+
+    GGML_API struct ggml_tensor * ggml_new_tensor_2d_ext_data(
+            struct ggml_context * ctx,
+            enum   ggml_type type,
+            int64_t ne0,
+            int64_t ne1,
+            void* data);
 
     GGML_API struct ggml_tensor * ggml_new_tensor_3d(
             struct ggml_context * ctx,
@@ -977,6 +1014,12 @@ extern "C" {
             struct ggml_context * ctx,
             struct ggml_tensor  * a,
             struct ggml_tensor  * b);
+
+    GGML_API struct ggml_tensor * ggml_mul_mat_ext_dst(
+            struct ggml_context * ctx,
+            struct ggml_tensor  * a,
+            struct ggml_tensor  * b,
+            void* dst);
 
     // A: m columns, n rows,
     // B: p columns, n rows,
